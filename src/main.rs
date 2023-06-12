@@ -1,3 +1,5 @@
+mod login;
+
 use clap::Parser;
 
 #[derive(Parser)]
@@ -8,21 +10,21 @@ use clap::Parser;
     long_about = "File i/o Service using Discord as storage. \nAll options are exclusive. Specifying multiple options will result in an error.\nFor more information,check here https://github.com/disdrive"
 )]
 struct Args {
-    #[arg(short = 'L', long = "login", help = "login to disdrive.", conflicts_with_all=&["file_name", "dl_key", "list", "logout", "dl_keys", "public", "private"])]
+    #[arg(short = 'L', long = "login", help = "login to disdrive.", conflicts_with_all=&["file_path", "dl_key", "list", "logout", "dllist", "public", "private"])]
     login: bool,
-    #[arg(short = 'u', long = "upload", help = "upload file to disdrive.", conflicts_with_all=&["login", "dl_key", "list", "logout", "dl_keys", "public", "private"])]
+    #[arg(short = 'u', long = "upload", help = "upload file to disdrive.", conflicts_with_all=&["login", "dl_key", "list", "logout", "dllist", "public", "private"])]
     file_path: Option<String>,
-    #[arg(short = 'd', long = "download", help = "download file from disdrive.", conflicts_with_all=&["login", "file_name", "list", "logout", "dl_keys", "public", "private"])]
+    #[arg(short = 'd', long = "download", help = "download file from disdrive.", conflicts_with_all=&["login", "file_path", "list", "logout", "dllist", "public", "private"])]
     dl_key: Option<String>,
-    #[arg(short = 'l', long = "list", help = "list files in disdrive.", conflicts_with_all=&["login", "file_name", "dl_key", "logout", "dl_keys", "public", "private"])]
+    #[arg(short = 'l', long = "list", help = "list files in disdrive.", conflicts_with_all=&["login", "file_path", "dl_key", "logout", "dllist", "public", "private"])]
     list: bool,
-    #[arg(short = 'O', long = "logout", help = "logout from disdrive.", conflicts_with_all=&["login", "file_name", "dl_key", "list", "dl_keys", "public", "private"])]
+    #[arg(short = 'O', long = "logout", help = "logout from disdrive.", conflicts_with_all=&["login", "file_path", "dl_key", "list", "dllist", "public", "private"])]
     logout: bool,
-    #[arg(short = 'D', long = "dl_from_list", help = "Downloads files from the list in an interactive manner.", conflicts_with_all=&["login", "file_name", "dl_key", "list", "logout", "public", "private"])]
+    #[arg(short = 'D', long = "dl_from_list", help = "Downloads files from the list in an interactive manner.", conflicts_with_all=&["login", "file_path", "dl_key", "list", "logout", "public", "private"])]
     dllist: bool,
-    #[arg(short = 'p', long = "public", help = "make file public.", conflicts_with_all=&["login", "file_name", "dl_key", "list", "logout", "dl_keys", "private"])]
+    #[arg(short = 'p', long = "public", help = "make file public.", conflicts_with_all=&["login", "file_path", "dl_key", "list", "logout", "dllist", "private"])]
     public: Option<String>,
-    #[arg(short = 'P', long = "private", help = "make file private.", conflicts_with_all=&["login", "file_name", "dl_key", "list", "logout", "dl_keys", "public"])]
+    #[arg(short = 'P', long = "private", help = "make file private.", conflicts_with_all=&["login", "file_path", "dl_key", "list", "logout", "dllist", "public"])]
     private: Option<String>,
 }
 
@@ -32,14 +34,14 @@ fn main() {
     // use match to handle each command separately
     match args {
         Args { login: true, .. } => {
+            login::interactive_login();
             println!("login");
-            // implement the login logic here
         }
         Args {
-            file_path: Some(file_name),
+            file_path: Some(file_path),
             ..
         } => {
-            println!("upload file {}", file_name);
+            println!("upload file {}", file_path);
             // implement the upload file logic here
         }
         Args {
