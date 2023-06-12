@@ -1,6 +1,7 @@
 mod login;
 
 use clap::Parser;
+use tokio::runtime::Runtime;
 
 #[derive(Parser)]
 #[command(
@@ -28,19 +29,19 @@ struct Args {
     private: Option<String>,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let args = Args::parse();
-
-    // use match to handle each command separately
     match args {
         Args { login: true, .. } => {
-            login::interactive_login();
+            login::interactive_login().await;
             println!("login");
         }
         Args {
             file_path: Some(file_path),
             ..
         } => {
+            //upload
             println!("upload file {}", file_path);
             // implement the upload file logic here
         }
@@ -48,18 +49,22 @@ fn main() {
             dl_key: Some(dl_key),
             ..
         } => {
+            //download
             println!("download file {}", dl_key);
             // implement the download file logic here
         }
         Args { list: true, .. } => {
+            //list
             println!("list files");
             // implement the list files logic here
         }
         Args { logout: true, .. } => {
+            //logout
             println!("logout");
             // implement the logout logic here
         }
         Args { dllist: true, .. } => {
+            //download files from list
             println!("download files from list");
             // implement the download files from list logic here
         }
@@ -67,6 +72,7 @@ fn main() {
             public: Some(public),
             ..
         } => {
+            //make file public(keys)
             println!("make file {} public", public);
             // implement the make file public logic here
         }
@@ -74,11 +80,13 @@ fn main() {
             private: Some(private),
             ..
         } => {
+            //make file private(keys)
             println!("make file {} private", private);
             // implement the make file private logic here
         }
         _ => {
-            println!("No command selected");
+            // print help
+            println!("");
         }
     }
 }
