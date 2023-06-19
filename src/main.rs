@@ -52,13 +52,20 @@ async fn main() {
         } => {
             //upload
             let path = Path::new(&file_path);
-            let is_available = utility::is_dir_or_link(path).unwrap();
-            if !is_available {
-                println!(
-                    "{} is not available\nIt could potentially be a directory or a symbolic link.",
-                    file_path
-                );
-                return;
+            match utility::is_regular_file(path) {
+                Ok(is_regular_file) => {
+                    if !is_regular_file {
+                        println!(
+                            "{} is not available\nIt could potentially be a directory or a symbolic link.",
+                            file_path
+                        );
+                        return;
+                    }
+                }
+                Err(e) => {
+                    println!("Error: {}", e);
+                    return;
+                }
             }
             match upload::file_upload(path).await {
                 Ok(key) => println!("{} is uploaded successfully", key),

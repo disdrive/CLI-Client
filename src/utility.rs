@@ -12,12 +12,10 @@ pub async fn setPrivate(key: &str) {
     println!("setPrivate");
 }
 
-pub fn is_dir_or_link(path: &Path) -> io::Result<bool> {
+pub fn is_regular_file(path: &Path) -> io::Result<bool> {
     let metadata = fs::metadata(path)?;
-    println!(
-        "is_dir():{}\nis_symlink():{}",
-        metadata.is_dir(),
-        metadata.file_type().is_symlink()
-    );
-    Ok(!(metadata.is_dir() || metadata.file_type().is_symlink()))
+    let is_dir = metadata.is_dir();
+    let is_symlink = metadata.file_type().is_symlink();
+    println!("is_dir():{}\nis_symlink():{}", is_dir, is_symlink);
+    Ok(!(is_dir || is_symlink))
 }
