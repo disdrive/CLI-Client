@@ -1,7 +1,7 @@
 mod download;
 mod login;
 mod upload;
-mod utility;
+pub mod utility;
 
 use std::path::Path;
 
