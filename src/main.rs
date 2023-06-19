@@ -1,9 +1,11 @@
-mod login;
 mod download;
+mod login;
+mod upload;
 mod utility;
 
+use std::path::Path;
+
 use clap::Parser;
-use tokio::runtime::Runtime;
 
 #[derive(Parser)]
 #[command(
@@ -40,17 +42,28 @@ async fn main() {
             println!("login");
         }
         Args { logout: true, .. } => {
-          //logout
-          println!("logout");
-          // implement the logout logic here
+            //logout
+            println!("logout");
+            // implement the logout logic here
         }
         Args {
             file_path: Some(file_path),
             ..
         } => {
             //upload
-            println!("upload file {}", file_path);
-            // implement the upload file logic here
+            let path = Path::new(&file_path);
+            let is_available = utility::is_dir_or_link(path).unwrap();
+            if !is_available {
+                println!(
+                    "{} is not available\nIt could potentially be a directory or a symbolic link.",
+                    file_path
+                );
+                return;
+            }
+            match upload::file_upload(path).await {
+                Ok(key) => println!("{} is uploaded successfully", key),
+                Err(e) => println!("upload error: {}", e),
+            }
         }
         Args {
             dl_key: Some(dl_key),
@@ -58,26 +71,25 @@ async fn main() {
         } => {
             //download
             println!("download file {}", dl_key);
-            download::dl_from_key(dl_key);
+            download::dl_from_key(&dl_key).await;
         }
         Args {
-          public: Some(public),
-          ..
-      } => {
-          //make file public(keys)
-          println!("make file {} public", public);
-          utility::setPublic(public);
-          // implement the make file public logic here
-      }
-      Args {
-          private: Some(private),
-          ..
-      } => {
-          //make file private(keys)
-          println!("make file {} private", private);
-          utility::setPrivate(private);
-          // implement the make file private logic here
-      }
+            public: Some(public),
+            ..
+        } => {
+            //make file public(keys)
+            println!("make file {} public", public);
+            utility::setPublic(&public).await;
+        }
+        Args {
+            private: Some(private),
+            ..
+        } => {
+            //make file private(keys)
+            println!("make file {} private", private);
+            utility::setPrivate(&private).await;
+            // implement the make file private logic here
+        }
         Args { list: true, .. } => {
             //list
             println!("list files");
