@@ -7,6 +7,8 @@ use std::path::Path;
 
 use clap::Parser;
 
+const SERVER_URL: &str = "http://localhost:3000";
+
 #[derive(Parser)]
 #[command(
     author = "TackleDevs",
@@ -36,6 +38,9 @@ struct Args {
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
+    let token = utility::read_token_info()
+        .expect("Failed to read token info")
+        .token;
     match args {
         Args { login: true, .. } => {
             login::interactive_login().await;
@@ -86,16 +91,17 @@ async fn main() {
         } => {
             //make file public(keys)
             println!("make file {} public", public);
-            utility::setPublic(&public).await;
+            match utility::set_public(&public, SERVER_URL, &token).await {
+                Ok(_) => println!("{} is public now", public),
+                Err(e) => println!("Error: {}", e),
+            }
         }
         Args {
             private: Some(private),
             ..
         } => {
-            //make file private(keys)
             println!("make file {} private", private);
-            utility::setPrivate(&private).await;
-            // implement the make file private logic here
+            utility::set_private(&private).await;
         }
         Args { list: true, .. } => {
             //list

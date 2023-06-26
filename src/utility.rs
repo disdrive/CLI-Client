@@ -1,3 +1,4 @@
+use reqwest::{Client, Error};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::{self, Write};
@@ -7,6 +8,12 @@ use std::path::PathBuf;
 #[derive(Serialize, Deserialize)]
 pub struct TokenInfo {
     pub(crate) token: String,
+}
+
+#[derive(Deserialize)]
+pub struct VisualityApiResponse {
+    success: bool,
+    message: String,
 }
 
 fn get_config_path() -> io::Result<PathBuf> {
@@ -37,12 +44,29 @@ pub fn read_token_info() -> io::Result<TokenInfo> {
     Ok(info)
 }
 
-pub async fn setPublic(key: &str) {
-    //後で実装
-    println!("setPublic");
+pub fn authStr(token: &str) -> String {
+    format!("Bearer {}", token)
 }
 
-pub async fn setPrivate(key: &str) {
+pub async fn set_public(key: &str, url: &str, token: &str) -> Result<(), Error> {
+    let client = Client::new();
+    let res = client
+        .post(format!("{}/api/set_public", url))
+        .body(key.to_string())
+        .header("authorization", authStr(token))
+        .send()
+        .await?;
+    let api_res: VisualityApiResponse = res.json().await?;
+
+    if api_res.success {
+        println!("success");
+    } else {
+        println!("error: {}", api_res.message);
+    }
+    Ok(())
+}
+
+pub async fn set_private(key: &str) {
     //後で実装
     println!("setPrivate");
 }
