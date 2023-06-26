@@ -44,7 +44,7 @@ pub fn read_token_info() -> io::Result<TokenInfo> {
     Ok(info)
 }
 
-pub fn authStr(token: &str) -> String {
+pub fn auth_str(token: &str) -> String {
     format!("Bearer {}", token)
 }
 
@@ -53,7 +53,7 @@ pub async fn set_public(key: &str, url: &str, token: &str) -> Result<(), Error> 
     let res = client
         .post(format!("{}/api/set_public", url))
         .body(key.to_string())
-        .header("authorization", authStr(token))
+        .header("authorization", auth_str(token))
         .send()
         .await?;
     let api_res: VisualityApiResponse = res.json().await?;
