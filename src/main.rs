@@ -14,7 +14,7 @@ const SERVER_URL: &str = "http://localhost:3000";
     author = "TackleDevs",
     version = "1.0.0",
     about = "disdrive cli client",
-    long_about = "File i/o Service using Discord as storage. \nAll options are exclusive. Specifying multiple options will result in an error.\nFor more information,check here https://github.com/disdrive"
+    long_about = "File i/o Service using Discord as storage. \nAll options are exclusive. Specifying multiple options will result in an error.\nFor more information, or valuable issues to report, please visit this link: https://github.com/disdrive"
 )]
 struct Args {
     #[arg(short = 'L', long = "login", help = "login to disdrive.", conflicts_with_all=&["file_path", "dl_key", "list", "logout", "dllist", "public", "private"])]
@@ -101,7 +101,10 @@ async fn main() {
             ..
         } => {
             println!("make file {} private", private);
-            utility::set_private(&private).await;
+            match utility::set_private(&private, SERVER_URL, &token).await {
+                Ok(_) => println!("{} is private now", private),
+                Err(e) => println!("Error: {}", e),
+            }
         }
         Args { list: true, .. } => {
             //list

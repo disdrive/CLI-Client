@@ -66,9 +66,21 @@ pub async fn set_public(key: &str, url: &str, token: &str) -> Result<(), Error> 
     Ok(())
 }
 
-pub async fn set_private(key: &str) {
-    //後で実装
-    println!("setPrivate");
+pub async fn set_private(key: &str, url: &str, token: &str) -> Result<(), Error> {
+    let client = Client::new();
+    let res = client
+        .post(format!("{}/api/set_private", url))
+        .body(key.to_string())
+        .header("authorization", auth_str(token))
+        .send()
+        .await?;
+    let api_res: VisualityApiResponse = res.json().await?;
+    if api_res.success {
+        println!("success");
+    } else {
+        println!("error: {}", api_res.message);
+    }
+    Ok(())
 }
 
 pub fn is_regular_file(path: &Path) -> io::Result<bool> {
