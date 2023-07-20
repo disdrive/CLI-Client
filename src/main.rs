@@ -7,7 +7,7 @@ use std::path::Path;
 
 use clap::Parser;
 
-const SERVER_URL: &str = "http://localhost:3000";
+const SERVER_URL: &str = "http://apitest.conbios.systems/v1";
 
 #[derive(Parser)]
 #[command(
@@ -43,7 +43,7 @@ async fn main() {
         .token;
     match args {
         Args { login: true, .. } => {
-            login::interactive_login().await;
+            login::interactive_login(SERVER_URL).await;
             println!("login");
         }
         Args { logout: true, .. } => {
@@ -72,7 +72,7 @@ async fn main() {
                     return;
                 }
             }
-            match upload::file_upload(path).await {
+            match upload::file_upload(path, SERVER_URL).await {
                 Ok(key) => println!("{} is uploaded successfully", key),
                 Err(e) => println!("upload error: {}", e),
             }

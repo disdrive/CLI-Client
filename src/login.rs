@@ -13,9 +13,13 @@ struct ResponseBody {
     message: Option<String>,
 }
 
-async fn call_api(user_id: &str, passwd: &str) -> Result<ResponseBody, Box<dyn std::error::Error>> {
+async fn call_api(
+    user_id: &str,
+    passwd: &str,
+    url: &str,
+) -> Result<ResponseBody, Box<dyn std::error::Error>> {
     let client = Client::new();
-    let url = "http://localhost:3000";
+    let url = format!("{}/auth/login", url);
     let body = serde_json::json!({
         "user_id": user_id,
         "password": passwd,
@@ -28,7 +32,7 @@ async fn call_api(user_id: &str, passwd: &str) -> Result<ResponseBody, Box<dyn s
     Ok(parsed_body)
 }
 
-pub async fn interactive_login() {
+pub async fn interactive_login(url: &str) {
     let mut user_id = String::new();
     print!("Please enter your user_id: ");
     io::stdout().flush().expect("Failed to flush stdout");
@@ -36,7 +40,7 @@ pub async fn interactive_login() {
         .read_line(&mut user_id)
         .expect("Failed to read line");
     let password = prompt_password("Please enter your password:").expect("Failed to read password");
-    match call_api(user_id.trim(), &password).await {
+    match call_api(user_id.trim(), &password, url).await {
         Ok(body) => {
             if body.success {
                 println!("Login successful!");
