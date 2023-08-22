@@ -24,6 +24,7 @@ async fn call_api(
         "user_id": user_id,
         "password": passwd,
     });
+    println!("{}", url);
     println!("{}", body.to_string());
     let response = client.post(url).json(&body).send().await?;
     let response_body: Value = response.json().await?;

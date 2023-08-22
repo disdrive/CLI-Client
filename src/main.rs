@@ -7,7 +7,8 @@ use std::path::Path;
 
 use clap::Parser;
 
-const SERVER_URL: &str = "http://apitest.conbios.systems/v1";
+const SERVER_URL: &str = "https://api-test.runfunrun.tech/v1";
+//const SERVER_URL: &str = "https://disdrive.com/v2"
 
 #[derive(Parser)]
 #[command(
@@ -44,7 +45,7 @@ async fn main() {
     match args {
         Args { login: true, .. } => {
             login::interactive_login(SERVER_URL).await;
-            println!("login");
+            println!("token is saved");
         }
         Args { logout: true, .. } => {
             //logout

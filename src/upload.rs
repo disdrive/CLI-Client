@@ -11,7 +11,7 @@ pub async fn file_upload(path: &Path, url: &str) -> Result<String, Box<dyn std::
     let form = Form::new().part("file", part);
     let client = Client::new();
     let res = client
-        .post(format!("{}/upload",url))
+        .post(format!("{}/file",url))
         .multipart(form)
         .send()
         .await?;
