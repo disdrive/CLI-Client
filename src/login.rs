@@ -24,8 +24,6 @@ async fn call_api(
         "userId": user_id,
         "password": passwd,
     });
-    println!("{}", url);
-    println!("{}", body.to_string());
     let response = client.post(url).json(&body).send().await?;
     let response_body: Value = response.json().await?;
     let parsed_body: ResponseBody = serde_json::from_value(response_body)?;
