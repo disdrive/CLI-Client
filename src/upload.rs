@@ -19,9 +19,6 @@ pub async fn file_upload(path: &Path) -> Result<String, Box<dyn std::error::Erro
         .multipart(form)
         .send()
         .await?;
-    println!("Response: {}", res.status());
-    println!("{:?}", res);
-
     let body = res.text().await?;
     Ok(body)
 }
