@@ -33,6 +33,8 @@ struct Args {
     dllist: bool,
 }
 
+//disdrive -P buntin --D oasdifaisdufasodjfoisa
+
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
@@ -90,7 +92,10 @@ async fn main() {
                 }
             }
             match upload::file_upload(path).await {
-                Ok(key) => println!("{} is uploaded successfully", key),
+                Ok(key) => {
+                    println!("{} is uploaded successfully", file_path);
+                    println!("key: {}", key)
+                }
                 Err(e) => println!("upload error: {}", e),
             }
         }

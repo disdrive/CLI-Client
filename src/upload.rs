@@ -1,10 +1,17 @@
 use reqwest::multipart::{Form, Part};
 use reqwest::Client;
+use serde::Deserialize;
+use serde_json::Value;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
 use crate::utility;
+
+#[derive(Debug, Deserialize)]
+struct ResponseBody {
+    key: String,
+}
 
 pub async fn file_upload(path: &Path) -> Result<String, Box<dyn std::error::Error>> {
     let mut buffer = Vec::new();
@@ -19,6 +26,7 @@ pub async fn file_upload(path: &Path) -> Result<String, Box<dyn std::error::Erro
         .multipart(form)
         .send()
         .await?;
-    let body = res.text().await?;
-    Ok(body)
+    let body: Value = res.json().await?;
+    let parsed: ResponseBody = serde_json::from_value(body)?;
+    Ok(parsed.key)
 }
