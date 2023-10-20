@@ -1,4 +1,4 @@
-use crate::utility::{write_token_info, TokenInfo};
+use crate::utility::{write_token_info, ClientInfo};
 use reqwest::Client;
 use rpassword::prompt_password;
 use serde::Deserialize;
@@ -31,21 +31,28 @@ async fn call_api(
     Ok(parsed_body)
 }
 
-pub async fn interactive_login(url: &str) {
+pub async fn interactive_login() {
     let mut user_id = String::new();
+    let mut server_url = String::new();
+    print!("Please enter your server_name: ");
+    io::stdout().flush().expect("Failed to flush stdout");
+    io::stdin()
+        .read_line(&mut server_url)
+        .expect("Failed to read line");
     print!("Please enter your user_id: ");
     io::stdout().flush().expect("Failed to flush stdout");
     io::stdin()
         .read_line(&mut user_id)
         .expect("Failed to read line");
     let password = prompt_password("Please enter your password:").expect("Failed to read password");
-    match call_api(user_id.trim(), &password, url).await {
+    match call_api(user_id.trim(), &password, &server_url.trim()).await {
         Ok(body) => {
             if body.success {
                 println!("Login successful!");
-                let info = TokenInfo {
+                let info = ClientInfo {
                     token: body.token.unwrap(),
                     user_id: user_id.trim().to_string(),
+                    server_url: server_url.trim().to_string(),
                 };
                 write_token_info(&info).expect("Failed to write token info");
             } else {

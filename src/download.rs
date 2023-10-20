@@ -1,17 +1,17 @@
-use crate::{utility, SERVER_URL};
+use crate::utility;
 use reqwest::header::{AUTHORIZATION, CONTENT_DISPOSITION};
 use std::path::PathBuf;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 
 pub async fn dl_from_key(key: &str) -> Result<PathBuf, Box<dyn std::error::Error>> {
-    let identity = utility::read_token_info().expect("Failed to read token info");
+    let info = utility::read_token_info().expect("Failed to read token info");
     let client = reqwest::Client::new();
     let response = client
-        .get(format!("{}/file", SERVER_URL))
-        .query(&[("userId", identity.user_id)])
+        .get(format!("{}/file", info.server_url))
+        .query(&[("userId", info.user_id)])
         .query(&[("key", key)])
-        .header(AUTHORIZATION, identity.token)
+        .header(AUTHORIZATION, info.token)
         .send()
         .await?;
 

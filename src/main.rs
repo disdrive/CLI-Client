@@ -7,9 +7,6 @@ use std::path::Path;
 
 use clap::Parser;
 
-const SERVER_URL: &str = "https://dev2.buntin.xyz/v1";
-//const SERVER_URL: &str = "https://disdrive.com/v2"
-
 #[derive(Parser)]
 #[command(
     author = "TackleDevs",
@@ -39,6 +36,13 @@ struct Args {
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
+    match utility::init() {
+        Ok(_) => {}
+        Err(e) => {
+            println!("Error: {}", e);
+            return;
+        }
+    }
     let token = utility::read_token_info()
         .expect(&format!(
             "Failed to read token info.\nCheck if {} file accessible",
@@ -53,13 +57,15 @@ async fn main() {
     }
     match args {
         Args { login: true, .. } => {
-            login::interactive_login(SERVER_URL).await;
+            login::interactive_login().await;
             println!("token is saved");
         }
         Args { logout: true, .. } => {
-            //logout
-            println!("logout");
-            // implement the logout logic here
+            //remove
+            match utility::remove_token_info() {
+                Ok(_) => println!("token is removed"),
+                Err(e) => println!("error: {}", e),
+            }
         }
         Args {
             file_path: Some(file_path),
@@ -83,7 +89,7 @@ async fn main() {
                     return;
                 }
             }
-            match upload::file_upload(path, SERVER_URL).await {
+            match upload::file_upload(path).await {
                 Ok(key) => println!("{} is uploaded successfully", key),
                 Err(e) => println!("upload error: {}", e),
             }
