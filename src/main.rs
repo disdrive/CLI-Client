@@ -91,44 +91,30 @@ async fn main() {
         Args {
             dl_key: Some(dl_key),
             ..
-        } => {
-            //download
-            println!("download file {}", dl_key);
-            download::dl_from_key(&dl_key).await;
-        }
+        } => match download::dl_from_key(&dl_key).await {
+            Ok(path) => println!("{} is downloaded successfully", path.to_str().unwrap()),
+            Err(e) => println!("download error: {}", e),
+        },
         Args {
-            public: Some(public),
+            public: Some(_public),
             ..
         } => {
-            //make file public(keys)
-            println!("make file {} public", public);
-            match utility::set_public(&public, SERVER_URL, &token).await {
-                Ok(_) => println!("{} is public now", public),
-                Err(e) => println!("Error: {}", e),
-            }
+            println!("comming soon...");
         }
         Args {
-            private: Some(private),
+            private: Some(_private),
             ..
         } => {
-            println!("make file {} private", private);
-            match utility::set_private(&private, SERVER_URL, &token).await {
-                Ok(_) => println!("{} is private now", private),
-                Err(e) => println!("Error: {}", e),
-            }
+            println!("comming soon...");
         }
         Args { list: true, .. } => {
-            //list
-            println!("list files");
-            // implement the list files logic here
+            println!("comming soon...");
         }
         Args { dllist: true, .. } => {
-            //download files from list
-            println!("download files from list");
-            // implement the download files from list logic here
+            println!("comming soon...");
         }
         _ => {
-            // print help
+            //print help
             println!("");
         }
     }

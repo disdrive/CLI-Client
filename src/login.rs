@@ -1,7 +1,7 @@
 use crate::utility::{write_token_info, TokenInfo};
 use reqwest::Client;
 use rpassword::prompt_password;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use serde_json::Value;
 use std::io;
 use std::io::Write;

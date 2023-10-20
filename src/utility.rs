@@ -1,7 +1,7 @@
 use reqwest::{Client, Error};
 use serde::{Deserialize, Serialize};
 use std::fs;
-use std::io::{self, Write};
+use std::io::{self};
 use std::path::Path;
 use std::path::PathBuf;
 
