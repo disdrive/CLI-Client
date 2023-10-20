@@ -8,6 +8,7 @@ use std::path::PathBuf;
 #[derive(Serialize, Deserialize)]
 pub struct TokenInfo {
     pub(crate) token: String,
+    pub(crate) user_id: String,
 }
 
 #[derive(Deserialize)]
@@ -16,7 +17,7 @@ pub struct VisualityApiResponse {
     message: String,
 }
 
-fn get_config_path() -> io::Result<PathBuf> {
+pub fn get_config_path() -> io::Result<PathBuf> {
     let mut config_path = dirs::home_dir().ok_or(io::Error::new(
         io::ErrorKind::NotFound,
         "Could not find home directory",
@@ -34,13 +35,21 @@ pub fn write_token_info(info: &TokenInfo) -> io::Result<()> {
 
 pub fn read_token_info() -> io::Result<TokenInfo> {
     let config_path = get_config_path()?;
+    let mut info = TokenInfo {
+        token: String::new(),
+        user_id: String::new(),
+    };
     if !config_path.exists() {
-        write_token_info(&TokenInfo {
-            token: String::new(),
-        })?;
+        write_token_info(&info)?;
+    } else {
+        match fs::read_to_string(&config_path) {
+            Ok(data) => match serde_json::from_str(&data) {
+                Ok(parsed_info) => info = parsed_info,
+                Err(_) => write_token_info(&info)?,
+            },
+            Err(_) => write_token_info(&info)?,
+        }
     }
-    let data = fs::read_to_string(&config_path)?;
-    let info: TokenInfo = serde_json::from_str(&data)?;
     Ok(info)
 }
 

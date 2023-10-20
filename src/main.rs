@@ -7,7 +7,7 @@ use std::path::Path;
 
 use clap::Parser;
 
-const SERVER_URL: &str = "https://api-test.runfunrun.tech/v1";
+const SERVER_URL: &str = "https://dev2.buntin.xyz/v1";
 //const SERVER_URL: &str = "https://disdrive.com/v2"
 
 #[derive(Parser)]
@@ -40,8 +40,17 @@ struct Args {
 async fn main() {
     let args = Args::parse();
     let token = utility::read_token_info()
-        .expect("Failed to read token info")
+        .expect(&format!(
+            "Failed to read token info.\nCheck if {} file accessible",
+            utility::get_config_path()
+                .expect("Failed to get config path")
+                .to_str()
+                .unwrap()
+        ))
         .token;
+    if token.is_empty() {
+        println!("token is empty");
+    }
     match args {
         Args { login: true, .. } => {
             login::interactive_login(SERVER_URL).await;
@@ -67,6 +76,7 @@ async fn main() {
                         );
                         return;
                     }
+                    //pass
                 }
                 Err(e) => {
                     println!("Error: {}", e);

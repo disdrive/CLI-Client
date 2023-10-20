@@ -21,7 +21,7 @@ async fn call_api(
     let client = Client::new();
     let url = format!("{}/auth/login", url);
     let body = serde_json::json!({
-        "user_id": user_id,
+        "userId": user_id,
         "password": passwd,
     });
     println!("{}", url);
@@ -47,6 +47,7 @@ pub async fn interactive_login(url: &str) {
                 println!("Login successful!");
                 let info = TokenInfo {
                     token: body.token.unwrap(),
+                    user_id: user_id.trim().to_string(),
                 };
                 write_token_info(&info).expect("Failed to write token info");
             } else {

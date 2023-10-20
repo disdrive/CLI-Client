@@ -184,6 +184,8 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "dirs",
+ "mime",
+ "mime_guess",
  "reqwest",
  "rpassword",
  "serde",
